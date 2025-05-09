@@ -28,8 +28,18 @@ SECRET_KEY =\
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','https://sakthioviya1-8000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai']
-CSRF_TRUSTED_ORIGINS = ['https://sakthioviya1-8000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai']
+ALLOWED_HOSTS = [
+    'localhost',
+    'sakthioviya1-8001.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai',  # Add the new URL here
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://sakthioviya1-8001.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai',  # Add the new URL here
+]
+
+
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [],
@@ -45,6 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +65,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    'https://sakthioviya1-8001.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai',
+]
+
 
 ROOT_URLCONF = 'djangoproj.urls'
 
