@@ -24,32 +24,31 @@ const Dealer = () => {
   let reviews_url = root_url+`djangoapp/reviews/dealer/${id}`;
   let post_review = root_url+`postreview/${id}`;
   
-  const get_dealer = async ()=>{
-    const res = await fetch(dealer_url, {
-      method: "GET"
-    });
-    const retobj = await res.json();
-    
-    if(retobj.status === 200) {
-      let dealerobjs = Array.from(retobj.dealer)
-      setDealer(dealerobjs[0])
-    }
-  }
-
-  const get_reviews = async ()=>{
-    const res = await fetch(reviews_url, {
-      method: "GET"
-    });
-    const retobj = await res.json();
-    
-    if(retobj.status === 200) {
-      if(retobj.reviews.length > 0){
-        setReviews(retobj.reviews)
+  const get_dealer = async () => {
+    try {
+      const res = await fetch(dealer_url, { method: "GET" });
+      const retobj = await res.json();
+      if (retobj.status === 200) {
+        setDealer(retobj.dealer);
       } else {
-        setUnreviewed(true);
+        console.error("Failed to fetch dealer:", retobj.message);
       }
+    } catch (error) {
+      console.error("Error fetching dealer data:", error);
     }
-  }
+  };
+  
+  const get_reviews = async () => {
+    try {
+      const res = await fetch(reviews_url, { method: "GET" });
+      const retobj = await res.json();
+      if (retobj.status === 200) {
+        setReviews(retobj.reviews || []);
+      }
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
 
   const senti_icon = (sentiment)=>{
     let icon = sentiment === "positive"?positive_icon:sentiment==="negative"?negative_icon:neutral_icon;
@@ -59,20 +58,26 @@ const Dealer = () => {
   useEffect(() => {
     get_dealer();
     get_reviews();
-    if(sessionStorage.getItem("username")) {
-      setPostReview(<a href={post_review}><img src={review_icon} style={{width:'10%',marginLeft:'10px',marginTop:'10px'}} alt='Post Review'/></a>)
-
-      
+    if (sessionStorage.getItem("username")) {
+      setPostReview(
+        <a href={post_review}>
+          <img src={review_icon} style={{ width: "10%", marginLeft: "10px", marginTop: "10px" }} alt="Post Review" />
+        </a>
+      );
     }
-  },[]);  
+  }, []); 
 
 
 return(
   <div style={{margin:"20px"}}>
       <Header/>
       <div style={{marginTop:"10px"}}>
-      <h1 style={{color:"grey"}}>{dealer.full_name}{postReview}</h1>
-      <h4  style={{color:"grey"}}>{dealer['city']},{dealer['address']}, Zip - {dealer['zip']}, {dealer['state']} </h4>
+      <h1 style={{ color: "grey" }}>
+  {dealer.full_name || "Loading..."} {postReview}
+</h1>
+<h4 style={{ color: "grey" }}>
+  {dealer.city && dealer.address ? `${dealer.city}, ${dealer.address}, Zip - ${dealer.zip}, ${dealer.state}` : "Loading dealer info..."}
+</h4>
       </div>
       <div class="reviews_panel">
       {reviews.length === 0 && unreviewed === false ? (
