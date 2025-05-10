@@ -14,28 +14,21 @@ sentiment_analyzer_url = os.getenv(
 
 # def get_request(endpoint, **kwargs):
 # Add code for get requests to back end
-def get_request(endpoint, **kwargs):
-    # Use urlencode to safely encode parameters
-    params = urlencode(kwargs)
-
-    # Construct the full request URL
-    request_url = backend_url + endpoint + ("?" + params if params else "")
-    print(f"GET from {request_url}")
-
+def get_request(url, **kwargs):
     try:
-        # Send GET request to the server
-        response = requests.get(request_url)
-        
-        # Check if response is successful
-        if response.status_code == 200:
-            return response.json()
+        response = requests.get(url, params=kwargs)
+        response.raise_for_status()
+        if response.text:
+            return response.json()  # Auto-decodes JSON
         else:
-            print(f"Error: Received status code {response.status_code} from the server.")
-            return {"status": response.status_code, "message": "Error fetching data"}
+            print(f"Empty response from {url}")
+            return None
     except requests.exceptions.RequestException as e:
-        # Log network errors or request exceptions
         print(f"Network exception occurred: {e}")
-        return {"status": 500, "message": "Network exception occurred"}
+        return None
+    except ValueError as e:
+        print(f"JSON parsing error: {e}")
+        return None
 
 # def analyze_review_sentiments(text):
 # request_url = sentiment_analyzer_url+"analyze/"+text

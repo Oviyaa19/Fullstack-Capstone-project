@@ -21,7 +21,8 @@ const Dealer = () => {
   let params = useParams();
   let id =params.id;
   let dealer_url = root_url+`djangoapp/dealer/${id}`;
-  let reviews_url = root_url+`djangoapp/reviews/dealer/${id}`;
+  let reviews_url = root_url + `djangoapp/reviews/dealer/${id}`;
+
   let post_review = root_url+`postreview/${id}`;
   
   const get_dealer = async () => {
@@ -79,7 +80,7 @@ return(
   {dealer.city && dealer.address ? `${dealer.city}, ${dealer.address}, Zip - ${dealer.zip}, ${dealer.state}` : "Loading dealer info..."}
 </h4>
       </div>
-      <div class="reviews_panel">
+      <div className="reviews_panel">
       {reviews.length === 0 && unreviewed === false ? (
         <text>Loading Reviews....</text>
       ):  unreviewed === true? <div>No reviews yet! </div> :

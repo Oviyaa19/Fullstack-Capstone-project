@@ -127,18 +127,33 @@ def get_dealer_details(request, dealer_id):
 # Create a `get_dealer_reviews` view to render the reviews of a dealer
 # def get_dealer_reviews(request,dealer_id):
 def get_dealer_reviews(request, dealer_id):
-    # if dealer id has been provided
-    if(dealer_id):
-        endpoint = "/fetchReviews/dealer/"+str(dealer_id)
-        reviews = get_request(endpoint)
-        for review_detail in reviews:
-            response = analyze_review_sentiments(review_detail['review'])
-            print(response)
-            review_detail['sentiment'] = response['sentiment']
-        return JsonResponse({"status":200,"reviews":reviews})
-    else:
-        return JsonResponse({"status":400,"message":"Bad Request"})
+    if dealer_id:
+        endpoint = "https://sakthioviya1-3030.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/fetchReviews/dealer/" + str(dealer_id)
 
+        reviews = get_request(endpoint)
+
+        try:
+            # Parse JSON if needed
+            if isinstance(reviews, str):
+                reviews = json.loads(reviews)
+
+            if not isinstance(reviews, list):
+                return JsonResponse({"status": 500, "message": "Invalid response format"})
+
+            for review_detail in reviews:
+                if isinstance(review_detail, dict) and 'review' in review_detail:
+                    sentiment = analyze_review_sentiments(review_detail['review'])
+                    review_detail['sentiment'] = sentiment.get('sentiment', 'neutral')
+                else:
+                    review_detail['sentiment'] = 'unknown'
+
+            return JsonResponse({"status": 200, "reviews": reviews})
+
+        except Exception as e:
+            print("Error in get_dealer_reviews:", str(e))
+            return JsonResponse({"status": 500, "message": str(e)})
+    else:
+        return JsonResponse({"status": 400, "message": "Bad Request"})
 
 
 
